@@ -68,14 +68,19 @@ impl RobloxStudio {
         let hkcu = RegKey::predef(winreg::enums::HKEY_CURRENT_USER);
 
         let roblox_studio_reg = hkcu
-            .open_subkey(r"Software\Roblox\RobloxStudio")
+            .open_subkey(r"Software\ROBLOX Corporation\Environments\roblox-studio")
             .map_err(Error::RegistryError)?;
 
-        let content_folder_value: String = roblox_studio_reg
-            .get_value("ContentFolder")
+        let installer_location_value: String = roblox_studio_reg
+            .get_value("")
             .map_err(Error::RegistryError)?;
 
-        let content_folder_path = PathBuf::from(content_folder_value);
+        let mut content_folder_path = PathBuf::from(installer_location_value)
+            .parent()
+            .ok_or(Error::MalformedRegistry)?
+            .to_path_buf();
+
+        content_folder_path.push("content");
 
         let root = content_folder_path
             .parent()
