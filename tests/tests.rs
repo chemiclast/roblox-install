@@ -24,9 +24,13 @@ fn test_windows() {
         .contains("RobloxStudioBeta.exe"));
 
     let content = studio.content_path();
-    let meta = fs::metadata(&content).unwrap();
+    let meta = fs::metadata(&content).expect("Failed to open content folder!");
     assert!(meta.is_dir());
     assert!(content.to_string_lossy().contains("content"));
+
+    let app_meta =
+        fs::metadata(studio.application_path()).expect("Failed to open application path!");
+    assert!(app_meta.is_file());
 }
 
 #[cfg(target_os = "macos")]
